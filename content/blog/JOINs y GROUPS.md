@@ -37,8 +37,8 @@ Los primeros 15 resultados que obtenemos son los siguientes:
 | 11040207  | 7000  | 2017-03-15 00:00:00 |
 | 11070167  | 5600  | 2017-03-15 00:00:00 |
 | 11070129  | 5600  | 2017-03-15 00:00:00 |
-| 11070166  | 5600  | 2017-03-15 00:00:00 |
-| 11040155  | 7000  | 2017-03-15 00:00:00 |
+| 98339593  | 2300  | 2026-06-08 16:15:00 |
+| 92910202  | 1550  | 2026-06-08 14:30:00 |
 | 11030178  | 16900 | 2017-11-26 09:16:31 |
 | 11070119  | 5600  | 2017-03-15 00:00:00 |
 | 11060201  | 2600  | 2017-10-31 00:00:00 |
@@ -110,6 +110,8 @@ La tabla izquierda es `alumnos`.
 | 11030213  | RAUL ANDRES    | COSS       | `null` |
 | 11030217  | CESAR          | FERRUSCA   | 2800   |
 
+Para los alumnos Ramón Humberto (`11030183`) y Raúl Andrés (`11030213`), la columna `pago` se muestra como `null` debido a que están registrados en el sistema pero aún no han realizado ningún movimiento económico, reflejando así la ausencia de coincidencia en la tabla `pagos`.
+
 ### 1.3. RIGHT JOIN: Priorizando la Tabla Derecha
 
 El `RIGHT JOIN` es la contraparte exacta del `LEFT JOIN`. Devuelve **todas las filas de la tabla de la derecha**, y las coincidencias de la izquierda. Si hay datos en la derecha que no tienen relación con la izquierda, devuelve `NULL` en las columnas correspondientes a la tabla izquierda.
@@ -124,13 +126,15 @@ RIGHT JOIN pagos AS p ON(a.clave_alu = p.clave_alu);
 
 **Resultado:**
 
-| clave_alu | folio_pago | pago  | fecha_pago          | nombre       | ap_paterno |
-| --------- | ---------- | ----- | ------------------- | ------------ | ---------- |
-| 11040207  | 24574      | 7000  | 2017-03-15 00:00:00 | STEFANIA     | OROZCO     |
-| 11070167  | 24575      | 5600  | 2017-03-15 00:00:00 | ROGELIO      | PI         |
-| 11070129  | 24576      | 5600  | 2017-03-15 00:00:00 | CARMEN SOFIA | COPADO     |
-| 11030178  | 25554      | 16900 | 2017-11-23 00:00:00 | RAFAEL       | GARCIA     |
-| 11030178  | 25833      | 7000  | 2017-06-20 00:00:00 | RAFAEL       | GARCIA     |
+| clave_alu | folio_pago | pago  | fecha_pago          | nombre   | ap_paterno |
+| --------- | ---------- | ----- | ------------------- | -------- | ---------- |
+| 11040207  | 24574      | 7000  | 2017-03-15 00:00:00 | STEFANIA | OROZCO     |
+| 98339593  | 29216      | 2300  | 2026-06-08 16:15:00 | `null`   | `null`     |
+| 92910202  | 29217      | 1550  | 2026-06-08 14:30:00 | `null`   | `null`     |
+| 11030178  | 25554      | 16900 | 2017-11-23 00:00:00 | RAFAEL   | GARCIA     |
+| 11030178  | 25833      | 7000  | 2017-06-20 00:00:00 | RAFAEL   | GARCIA     |
+
+La consulta prioriza y trae todos los registros de la tabla `pagos` sin importar si tienen un alumno asociado o no. Para los folios `29216` y `29217`, las columnas `nombre` y `ap_paterno` aparecen como `null` porque esos alumnos no existen en tabla `alumnos`, dejando los pagos "huérfanos" pero visibles debido al tipo de unión elegido.
 
 ### 1.4. Casos de uso de los JOINs
 
