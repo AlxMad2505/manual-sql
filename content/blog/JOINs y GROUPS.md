@@ -1,83 +1,70 @@
 # Entendiendo los JOINs y GROUPS en MySQL
 
-## 1. JOINs en MySQL
-
 Para ilustrar cómo funcionan los diferentes tipos de `JOIN` en MySQL, utilizaremos dos tablas de la base de datos `colegio`:
 
 1. **`alumnos`**: Contiene la información personal de cada estudiante, donde el identificador único es `clave_alu`.
 2. **`pagos`**: Registra las transacciones financieras y se relaciona con los estudiantes a través de la columna `clave_alu`.
 
-La clave para cualquier `JOIN` es encontrar esa columna en común (en este caso, `clave_alu`) que sirve como puente entre ambas tablas.
-
 Primero podemos llevar a cabo una consulta con la tabla `alumnos`:
 
 ```sql
 SELECT clave_alu, nombre, ap_paterno
-FROM alumnos
-LIMIT 15; 
+FROM alumnos;
 ```
 
-Los primeros 15 resultados que obtenemos son los siguientes:
+Los primeros 5 resultados que obtenemos son los siguientes:
 
-| clave_alu | nombre          | ap_paterno      |
-| --------- | --------------- | --------------- |
-| 11030172  | ARGELIA         | BORBOLLA        |
-| 11030173  | KARLA MARIANA   | CASTRO          |
-| 11030177  | OCTAVIO         | FERRUSCA        |
-| 11030178  | RAFAEL          | GARCIA          |
-| 11030180  | CARLOS DAVID    | GUTIERREZ       |
-| 11030183  | RAMON HUMBERTO  | JIMENEZ         |
-| 11030188  | JAVIER JOSUE    | MARTINEZ        |
-| 11030199  | NESTOR MARTIN   | ROSALES         |
-| 11030201  | OSCAR           | SUAREZ          |
-| 11030204  | ROBERTO         | VAZQUEZ         |
-| 11030205  | ALEJANDRO       | VAZQUEZ MELLADO |
-| 11030207  | MICHELLE IVONNE | AGUILAR         |
-| 11030208  | JOSE DE JESUS   | ALVAREZ         |
-| 11030213  | RAUL ANDRES     | COSS            |
-| 11030215  | ANDRES          | CRUZ            |
+| clave_alu | nombre         | ap_paterno |
+| --------- | -------------- | ---------- |
+| 11030172  | ARGELIA        | BORBOLLA   |
+| 11030173  | KARLA MARIANA  | CASTRO     |
+| 11030177  | OCTAVIO        | FERRUSCA   |
+| 11030178  | RAFAEL         | GARCIA     |
+| 11030183  | RAMON HUMBERTO | JIMENEZ    |
+
 
 En el caso de la consulta a la tabla de `pagos`, podemos mandar a llamar también la columna `clave_alu`:
 
 ```sql
 SELECT clave_alu, pago, fecha_pago
-FROM pagos
-LIMIT 15;
+FROM pagos;
 ```
 
 Los primeros 15 resultados que obtenemos son los siguientes:
 
-| clave_alu | pago | fecha_pago          |
-| --------- | ---- | ------------------- |
-| 11040207  | 7000 | 2017-03-15 00:00:00 |
-| 11070167  | 5600 | 2017-03-15 00:00:00 |
-| 11070129  | 5600 | 2017-03-15 00:00:00 |
-| 11070166  | 5600 | 2017-03-15 00:00:00 |
-| 11040155  | 7000 | 2017-03-15 00:00:00 |
-| 11040275  | 7000 | 2017-03-15 00:00:00 |
-| 11070119  | 5600 | 2017-03-15 00:00:00 |
-| 11040246  | 7000 | 2017-03-15 00:00:00 |
-| 11040279  | 7000 | 2017-03-09 00:00:00 |
-| 11070173  | 5600 | 2017-03-12 00:00:00 |
-| 11070115  | 5600 | 2017-03-12 00:00:00 |
-| 11070253  | 7000 | 2017-03-12 00:00:00 |
-| 11040239  | 7000 | 2017-03-12 00:00:00 |
-| 11040182  | 7000 | 2017-03-12 00:00:00 |
-| 11070112  | 5600 | 2017-03-12 00:00:00 |
+| clave_alu | pago  | fecha_pago          |
+| --------- | ----- | ------------------- |
+| 11040207  | 7000  | 2017-03-15 00:00:00 |
+| 11070167  | 5600  | 2017-03-15 00:00:00 |
+| 11070129  | 5600  | 2017-03-15 00:00:00 |
+| 11070166  | 5600  | 2017-03-15 00:00:00 |
+| 11040155  | 7000  | 2017-03-15 00:00:00 |
+| 11030178  | 16900 | 2017-11-26 09:16:31 |
+| 11070119  | 5600  | 2017-03-15 00:00:00 |
+| 11060201  | 2600  | 2017-10-31 00:00:00 |
+| 11040275  | 7000  | 2017-03-15 00:00:00 |
 
-Aquí podemos ver qué alumno hizo qué pago, pero debido a la falta de un campo `nombre` dentro de la tabla `pagos`, tendríamos que llevar a cabo muchas más consultas para relacionar manualmente el identificador único de cada alumno entre cada tabla. Aquí es donde entran los `JOIN`.
+
+## 1. JOINs en MySQL
+
+Hasta este punto hemos visto las tablas alumnos y pagos por separado. La tabla alumnos contiene información personal de cada estudiante, mientras que la tabla pagos almacena los pagos realizados. 
+
+Sin embargo, en la tabla pagos únicamente se guarda el identificador del alumno y no su nombre, por lo que si quisiéramos saber quién realizó cada pago tendríamos que hacer consultas adicionales y relacionar manualmente los datos de ambas tablas. 
+
+Los JOIN nos permiten resolver este problema de forma sencilla, ya que unen la información de dos o más tablas a través de un campo en común. De esta manera podemos obtener en una sola consulta datos del alumno y de sus pagos, generando resultados más completos y fáciles de interpretar.
+
+La clave para cualquier `JOIN` es encontrar una columna en común (en este caso, `clave_alu`) que sirve como puente entre ambas tablas.
 
 ### 1.1. INNER JOIN: Intersección Exacta
 
 El `INNER JOIN` (o simplemente `JOIN`) devuelve **únicamente** las filas donde hay una coincidencia en ambas tablas. Si un alumno no ha hecho pagos, o si un pago no tiene un alumno válido asociado, no aparecerán en el resultado.
 
-**Ejemplo:** Queremos obtener el nombre completo del alumno junto con el monto de su pago y la fecha en que lo realizó. (Limitaremos la salida a 5 registros para visualizar el ejemplo).
+**Ejemplo:** Queremos obtener el nombre completo del alumno junto con el monto de su pago y la fecha en que lo realizó.
 
 ```sql
 SELECT a.clave_alu, a.nombre, a.ap_paterno, p.pago, p.fecha_pago
 FROM alumnos AS a
-INNER JOIN pagos AS p ON(a.clave_alu = p.clave_alu)
-LIMIT 5;
+INNER JOIN pagos AS p ON(a.clave_alu = p.clave_alu);
 ```
 
 **Explicación técnica:** 
@@ -105,8 +92,7 @@ El `LEFT JOIN` devuelve **todas las filas de la tabla de la izquierda** (la prim
 ```sql
 SELECT a.clave_alu, a.nombre, a.ap_paterno, p.pago
 FROM alumnos AS a
-LEFT JOIN pagos AS p ON(a.clave_alu = p.clave_alu)
-LIMIT 5;
+LEFT JOIN pagos AS p ON(a.clave_alu = p.clave_alu);
 ```
 
 **Explicación técnica:**
@@ -116,13 +102,13 @@ La tabla izquierda es `alumnos`.
 
 **Resultado:**
 
-| clave_alu | nombre  | ap_paterno | pago |
-| --------- | ------- | ---------- | ---- |
-| 11030172  | ARGELIA | BORBOLLA   | 2800 |
-| 11030172  | ARGELIA | BORBOLLA   | 2800 |
-| 11030172  | ARGELIA | BORBOLLA   | 2800 |
-| 11030172  | ARGELIA | BORBOLLA   | 2900 |
-| 11030172  | ARGELIA | BORBOLLA   | 2900 |
+| clave_alu | nombre         | ap_paterno | pago   |
+| --------- | -------------- | ---------- | ------ |
+| 11030172  | ARGELIA        | BORBOLLA   | 2800   |
+| 11030183  | RAMON HUMBERTO | JIMENEZ    | `null` |
+| 11030229  | EMILIO         | OLVERA     | 7000   |
+| 11030213  | RAUL ANDRES    | COSS       | `null` |
+| 11030217  | CESAR          | FERRUSCA   | 2800   |
 
 ### 1.3. RIGHT JOIN: Priorizando la Tabla Derecha
 
@@ -130,22 +116,21 @@ El `RIGHT JOIN` es la contraparte exacta del `LEFT JOIN`. Devuelve **todas las f
 
 **Ejemplo:** Queremos ver todos los pagos registrados en el sistema, asegurándonos de que no haya pagos sin un alumno asignado (lo que podríamos llamar pagos "fantasma").
 
-```sql
-SELECT p.id AS folio_pago, p.pago, p.fecha_pago, a.nombre, a.ap_paterno
-FROM alumnos AS a
-RIGHT JOIN pagos AS p ON(a.clave_alu = p.clave_alu)
-LIMIT 5;
+```sql 
+SELECT p.clave_alu, p.id AS folio_pago, p.pago, p.fecha_pago, a.nombre, a.ap_paterno 
+FROM alumnos AS a 
+RIGHT JOIN pagos AS p ON(a.clave_alu = p.clave_alu);
 ```
 
 **Resultado:**
 
-| folio_pago | pago | fecha_pago          | nombre       | ap_paterno |
-| ---------- | ---- | ------------------- | ------------ | ---------- |
-| 24574      | 7000 | 2017-03-15 00:00:00 | STEFANIA     | OROZCO     |
-| 24575      | 5600 | 2017-03-15 00:00:00 | ROGELIO      | PI         |
-| 24576      | 5600 | 2017-03-15 00:00:00 | CARMEN SOFIA | COPADO     |
-| 24577      | 5600 | 2017-03-15 00:00:00 | JORGE        | PEREZ      |
-| 24578      | 7000 | 2017-03-15 00:00:00 | RODRIGO      | LANDAVAZO  |
+| clave_alu | folio_pago | pago  | fecha_pago          | nombre       | ap_paterno |
+| --------- | ---------- | ----- | ------------------- | ------------ | ---------- |
+| 11040207  | 24574      | 7000  | 2017-03-15 00:00:00 | STEFANIA     | OROZCO     |
+| 11070167  | 24575      | 5600  | 2017-03-15 00:00:00 | ROGELIO      | PI         |
+| 11070129  | 24576      | 5600  | 2017-03-15 00:00:00 | CARMEN SOFIA | COPADO     |
+| 11030178  | 25554      | 16900 | 2017-11-23 00:00:00 | RAFAEL       | GARCIA     |
+| 11030178  | 25833      | 7000  | 2017-06-20 00:00:00 | RAFAEL       | GARCIA     |
 
 ### 1.4. Casos de uso de los JOINs
 
@@ -176,8 +161,7 @@ SELECT a.clave_alu, a.nombre, a.ap_paterno, SUM(p.pago) AS total_pagado
 FROM alumnos AS a
 INNER JOIN pagos AS p ON(a.clave_alu = p.clave_alu)
 GROUP BY a.clave_alu, a.nombre, a.ap_paterno
-ORDER BY SUM(p.pago) DESC
-LIMIT 5; 
+ORDER BY SUM(p.pago) DESC;
 ```
 
 **Explicación técnica:**
@@ -204,8 +188,7 @@ SELECT a.clave_alu, a.nombre, COUNT(p.id) AS numero_de_pagos
 FROM alumnos AS a
 INNER JOIN pagos AS p ON(a.clave_alu = p.clave_alu)
 GROUP BY a.clave_alu, a.nombre
-ORDER BY COUNT(p.id) DESC
-LIMIT 5;
+ORDER BY COUNT(p.id) DESC;
 ```
 
 **Explicación técnica:**
@@ -221,8 +204,30 @@ LIMIT 5;
 | 11040184  | ANA THALIA      | 12              |
 | 11040157  | ALEJANDRA NOEMI | 12              |
 | 11040229  | LUIS DAVID      | 12              |
+### 2.3 Ejemplo con MAX(), MIN() y AVG(): Pagos más altos y bajos y promedios
 
-### 2.3. Ejemplo con HAVING: Alumnos que han pagado menos de $12,000 en total
+La función `MAX()` nos devuelve el valor más alto de un grupo, mientras que `MIN()` extrae el valor más bajo. Son de mucha utilidad para identificar el límite superior y el límite inferior de una serie de valores, en este caso podemos utilizarlo para identificar estos límites en los pagos individuales de cada alumno.
+
+La función `AVG()` calcula la media aritmética de los valores numéricos dentro de un grupo, suma todos los valores del grupo y los divide automáticamente entre la cantidad de registros que lo conforman.
+
+```sql 
+SELECT a.clave_alu, a.nombre, AVG(p.pago) AS promedio_pagos,
+MIN(p.pago) AS pago_mas_bajo, MAX(p.pago) AS pago_mas_alto 
+FROM alumnos AS a INNER JOIN pagos AS p ON(a.clave_alu = p.clave_alu)
+GROUP BY a.clave_alu, a.nombre;
+```
+
+**Resultado:** 
+
+| clave_alu | nombre         | promedio_pagos     | pago_mas_bajo | pago_mas_alto |
+| --------- | -------------- | ------------------ | ------------- | ------------- |
+| 11070253  | SALVADOR       | 2963.6363636363635 | 2320          | 7000          |
+| 11040239  | CARMEN ANDREA  | 3190.909090909091  | 2800          | 7000          |
+| 11040182  | RUTH GIOVANNA  | 3181.818181818182  | 2800          | 7000          |
+| 11070112  | LUIS EMILIO    | 2810               | 2500          | 5600          |
+| 11070244  | CARLA GABRIELA | 3227.2727272727275 | 2800          | 7000          |
+
+### 2.4. Ejemplo con HAVING: Alumnos que han pagado menos de $12,000 en total
 
 Si intentas usar `WHERE SUM(p.pago) < 12000`, MySQL lanzará un error de sintaxis porque `WHERE` no entiende de sumatorias ni de grupos. La forma correcta es:
 
@@ -232,8 +237,7 @@ FROM alumnos AS a
 INNER JOIN pagos AS p ON(a.clave_alu = p.clave_alu)
 GROUP BY a.clave_alu, a.nombre
 HAVING SUM(p.pago) < 12000
-ORDER BY SUM(p.pago) DESC
-LIMIT 5;
+ORDER BY SUM(p.pago) DESC;
 ```
 
 **Explicación técnica:**
@@ -252,7 +256,7 @@ LIMIT 5;
 | 11060201  | OSCAR       | 10800           |
 | 11040149  | JUAN MANUEL | 7000            |
 
-### 2.4. Diferencias entre WHERE y HAVING
+### 2.5. Diferencias entre WHERE y HAVING
 
 - `WHERE` filtra filas **antes** de que ocurra el agrupamiento.
 - `HAVING` filtra filas **después** de que los datos ya fueron agrupados y calculados.

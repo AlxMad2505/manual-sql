@@ -77,8 +77,8 @@ export default function BlogContent({ markdownContent, title, description }: Blo
 
   // Generar el índice de contenidos automáticamente
   const toc = useMemo(() => {
-    // Buscamos títulos que empiecen por ## o ### (los más comunes para el índice)
-    const headerRegex = /^(#{2,3})\s+(.*)/gm;
+    // Buscamos títulos que empiecen por #, ## o ### (los más comunes para el índice)
+    const headerRegex = /^(#{1,3})\s+(.*)/gm;
     const items: TocItem[] = [];
     let match;
 

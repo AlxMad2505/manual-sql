@@ -44,7 +44,7 @@ export default function Header() {
                 Materia
               </span>
               <span className="block text-xs md:text-sm font-bold uppercase tracking-tight">
-                Bases de Datos
+                Bases de Datos 1
               </span>
             </div>
           </div>

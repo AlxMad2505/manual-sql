@@ -32,7 +32,7 @@ export default async function Home() {
               Escrito por Alejandro Madrigal Urencio
             </div>
             <div className="md:w-1/3 text-center uppercase tracking-widest border-x border-blue-999 px-4">
-              Bases de Datos
+              Bases de Datos 1
             </div>
             <div className="md:w-1/3 text-right">
               Profesor Omar Mendoza González
